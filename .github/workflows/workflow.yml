@@ -27,3 +27,19 @@ jobs:
 
       - name: Push Docker Image
         run: docker push evilbyte/cdpipe:latest
+
+      - name: Notify Discord on success
+        if: ${{ success() }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{"content": "✅ GitHub Actions succeeded on `${{ github.repository }}` for commit `${{ github.sha }}`"}' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}L
+
+      - name: Notify Discord on failure
+        if: ${{ failure() }}
+        run: |
+          curl -H "Content-Type: application/json" \
+               -X POST \
+               -d '{"content": "❌ GitHub Actions failed on `${{ github.repository }}` for commit `${{ github.sha }}`"}' \
+               ${{ secrets.DISCORD_WEBHOOK_URL }}
